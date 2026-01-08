@@ -1,0 +1,49 @@
+# Stage 1: Mid-training (Continued Pretraining)
+# Objective: Inject repo-evolution priors without catastrophic drift
+
+extends: base.yaml
+
+stage: 1
+name: "mid_training"
+
+training:
+  num_epochs: 3
+  learning_rate: 1e-5  # Lower for continued pretraining
+  warmup_steps: 500
+  
+  # Loss components
+  loss_components:
+    lm_loss_weight: 1.0
+    kl_loss_weight: 0.1
+    anchor_loss_weight: 0.05
+
+data:
+  datasets:
+    - name: "bigcode/commitpack-subset-cf"
+      ratio: 0.60
+      format: "commitpack_codeflow"
+      streaming: true
+      
+    - name: "long_context_repo_snapshots"
+      ratio: 0.20
+      format: "packed_repo"
+      streaming: true
+      
+    - name: "synthetic_tool_traces"
+      ratio: 0.20
+      format: "tool_trace"
+      source: "stage5_synthesis"  # From closed loop
+
+safeguards:
+  # Enhanced drift control for mid-training
+  kl_lambda: 0.15  # Stronger regularization
+  anchor_frequency: 50  # More frequent anchor checks
+  
+  # Online monitoring
+  monitor_loss_trend: true
+  loss_spike_threshold: 2.0  # Stop if loss spikes >2x
+
+output:
+  checkpoint_dir: "checkpoints/stage1_midtrain"
+  save_best_anchor: true
+

@@ -1,0 +1,60 @@
+# Stage 3: Rollout-DPO (Preference Optimization)
+# Generate K rollouts, label winners/losers by verifiers
+
+extends: base.yaml
+
+stage: 3
+name: "rollout_dpo"
+
+training:
+  # DPO parameters
+  beta: 0.1
+  num_rollouts_per_prompt: 4
+  reference_model: "checkpoints/stage2_sft/instruct"
+  
+  # Training
+  num_epochs: 3
+  learning_rate: 1e-6
+  per_device_batch_size: 1
+
+data:
+  # Rollout generation
+  rollout_config:
+    temperature: 1.0
+    top_p: 0.95
+    top_k: 20
+    max_new_tokens: 2048
+    
+  # Verifiers for labeling
+  verifiers:
+    - "tests"  # tests pass/fail
+    - "build"  # build/lint pass/fail
+    - "schema"  # tool schema validity
+    - "patch_apply"  # patch applies cleanly
+    
+  # Preference labeling
+  preference_criteria:
+    - weight: 0.4
+      verifier: "tests"
+      pass_score: 1.0
+      fail_score: 0.0
+      
+    - weight: 0.3
+      verifier: "build"
+      pass_score: 1.0
+      fail_score: 0.0
+      
+    - weight: 0.2
+      verifier: "schema"
+      valid_score: 1.0
+      invalid_score: 0.0
+      
+    - weight: 0.1
+      verifier: "patch_apply"
+      clean_score: 1.0
+      conflict_score: 0.0
+
+output:
+  checkpoint_dir: "checkpoints/stage3_dpo"
+  preference_logs: "logs/stage3_preferences.jsonl"
+

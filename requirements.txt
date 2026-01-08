@@ -1,0 +1,77 @@
+# F6 StreamTrain Core Dependencies
+# MIT-level engineering, PhD-level math, Google-grade integration
+
+# Core ML/AI
+torch>=2.1.0
+transformers>=4.40.0
+accelerate>=0.30.0
+peft>=0.10.0
+datasets>=2.18.0
+safetensors>=0.4.0
+
+# Training & Optimization
+bitsandbytes>=0.43.0
+trl>=0.8.0  # For DPO/RL training
+wandb>=0.16.0  # Experiment tracking
+
+# MLX for Mac deployment
+mlx>=0.15.0
+mlx-lm>=0.1.0
+mlx-vlm>=0.1.0  # For VLM support
+
+# Vision & Multimodal
+pillow>=10.0.0
+opencv-python>=4.8.0
+timm>=0.9.0
+
+# Streaming & Data
+huggingface-hub>=0.20.0
+sentencepiece>=0.1.99
+
+# Verification & Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+ruff>=0.1.0
+
+# Security & Safeguards
+cryptography>=42.0.0
+psutil>=5.9.0
+
+# MCP & Tool Use
+mcp>=0.1.0  # Model Context Protocol
+
+# Context Management
+faiss-cpu>=1.7.4  # For context retrieval
+chromadb>=0.4.0  # Alternative vector store
+
+# Code Analysis
+tree-sitter>=0.20.0
+tree-sitter-python>=0.20.0
+tree-sitter-javascript>=0.20.0
+
+# Utilities
+pyyaml>=6.0
+tqdm>=4.66.0
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Benchmark Evaluation - Real Frameworks
+lm-eval>=0.4.0  # Official lm-eval-harness for MMLU, HellaSwag, etc. (Python API)
+human-eval>=1.0.0  # Official OpenAI HumanEval framework
+nltk>=3.8.0  # For BLEU scores
+matplotlib>=3.7.0  # For reports
+pandas>=2.0.0  # For reports
+# swebench  # Install from: https://github.com/princeton-nlp/SWE-bench
+# codexglue  # Install from: https://github.com/microsoft/CodeXGLUE
+
+# 2025/2026 Runtime Optimizations
+vllm>=0.3.0  # High-performance inference with PagedAttention
+flash-attn>=2.5.0  # Flash Attention 2 for memory-efficient attention
+# Note: flash-attn requires CUDA and may need: pip install flash-attn --no-build-isolation
+
+# Multimodal APIs
+diffusers>=0.24.0  # For image/video generation
+TTS>=0.20.0  # Text-to-speech
+transformers[audio]>=4.40.0  # Audio models support
+

@@ -1,0 +1,83 @@
+# F6 StreamTrain Base Configuration
+# MIT-level engineering standards
+
+model:
+  base_model: "janhq/Jan-v2-VL-high"
+  model_type: "qwen3_vl"
+  max_seq_length: 32768
+  vision_max_length: 2048
+  
+training:
+  # Mac-first constraints
+  use_lora: true
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  
+  # Gradient checkpointing for memory efficiency
+  gradient_checkpointing: true
+  gradient_accumulation_steps: 4
+  micro_batch_size: 1
+  
+  # Safeguards
+  max_grad_norm: 1.0
+  warmup_steps: 100
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  
+  # KL divergence regularization
+  kl_lambda: 0.1
+  anchor_lambda: 0.05
+  
+  # Checkpointing
+  save_steps: 500
+  eval_steps: 250
+  save_total_limit: 3
+
+data:
+  # Streaming guarantee
+  streaming: true
+  no_storage: true
+  cache_dir: "/tmp/f6_ephemeral_cache"  # Ephemeral mount
+  
+  # Data mix (Stage 1)
+  commitpack_ratio: 0.60
+  long_context_ratio: 0.20
+  synthetic_tool_ratio: 0.20
+
+safeguards:
+  # Catastrophic loss prevention
+  enable_anomaly_detection: true
+  anomaly_threshold: 10.0  # Loss threshold
+  gradient_clip_norm: 1.0
+  
+  # Anchor regression
+  anchor_eval_frequency: 100
+  anchor_regression_threshold: 0.05  # Max allowed degradation
+  
+  # Checkpoint validation
+  validate_checkpoints: true
+  min_anchor_score: 0.85
+
+fusion:
+  # Compatibility requirements
+  require_same_tokenizer: true
+  require_same_architecture: true
+  require_parameter_alignment: true
+  
+  # Regression gates
+  fusion_anchor_threshold: 0.90
+  fusion_tool_schema_threshold: 0.95
+  fusion_long_horizon_threshold: 0.90
+
+mlx:
+  dtype: "bfloat16"
+  quantization: "q4_0"  # 4-bit
+  mlx_path: "Jan-v2-VL-high-bf16-mlx"
+
+eval:
+  long_horizon_suite: true
+  swe_suite: true
+  anchor_suite: true
+

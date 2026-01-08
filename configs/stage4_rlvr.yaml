@@ -1,0 +1,59 @@
+# Stage 4: RLVR (RL with Verifiable Reward)
+# GRPO-family optimizer with verifiable rewards
+
+extends: base.yaml
+
+stage: 4
+name: "rlvr_grpo"
+
+training:
+  # GRPO parameters
+  algorithm: "grpo"  # Options: "grpo", "ms_grpo", "info_grpo"
+  kl_penalty: 0.1
+  clip_range: 0.2
+  
+  # Training
+  num_epochs: 10
+  learning_rate: 5e-7
+  per_device_batch_size: 1
+  gradient_accumulation_steps: 8
+  
+  # Reference model
+  reference_model: "checkpoints/stage3_dpo/instruct"
+
+reward:
+  # Verifiable reward components
+  components:
+    - name: "tests_pass"
+      weight: 0.4
+      verifier: "tests"
+      
+    - name: "build_ok"
+      weight: 0.3
+      verifier: "build"
+      
+    - name: "schema_ok"
+      weight: 0.2
+      verifier: "schema"
+      
+    - name: "cost_penalty"
+      weight: -0.1
+      metric: "token_count"  # Penalize verbosity
+      
+  # Reward shaping
+  reward_scale: 1.0
+  reward_clip: [-10.0, 10.0]
+
+advanced_grpo:
+  # MS-GRPO: Multi-step improvements
+  use_ms_grpo: true
+  ms_grpo_steps: 3
+  
+  # INFO-GRPO: Collapse prevention
+  use_info_grpo: true
+  info_grpo_entropy_bonus: 0.01
+
+output:
+  checkpoint_dir: "checkpoints/stage4_rlvr"
+  reward_logs: "logs/stage4_rewards.jsonl"
+

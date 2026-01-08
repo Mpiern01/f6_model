@@ -1,0 +1,57 @@
+# Quick Test Config - 3 steps with Dolphin Coder
+# Tests streaming + training without catastrophic loss
+
+model:
+  base_model: "models/Jan-v2-VL-high"
+  model_type: "qwen3_vl"
+  max_seq_length: 512
+  vision_max_length: 512
+  
+training:
+  # Mac-first constraints
+  use_lora: true
+  lora_r: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+  
+  # Quick test settings
+  max_steps: 3
+  micro_batch_size: 1
+  gradient_accumulation_steps: 1
+  learning_rate: 2e-5
+  warmup_steps: 0
+  
+  # Safeguards
+  max_grad_norm: 1.0
+  kl_lambda: 0.1
+  anchor_lambda: 0.05
+  
+  # Checkpointing
+  save_steps: 999
+  eval_steps: 999
+  save_total_limit: 1
+  
+  # Mac-specific
+  fp16: false
+  gradient_checkpointing: false
+
+data:
+  streaming: true
+  datasets:
+    - name: "QuixiAI/dolphin-coder"
+      ratio: 1.0
+      split: "train"
+      streaming: true
+      kwargs: {}
+
+safeguards:
+  enabled: true
+  loss_spike_threshold: 3.0
+  anchor_eval_frequency: 999
+  gradient_clip_threshold: 1.0
+
+output:
+  checkpoint_dir: "checkpoints/quick_test"
+  save_best_anchor: false
+

@@ -1,0 +1,84 @@
+# Dataset Configuration
+# Comprehensive dataset selection for F6 StreamTrain
+
+# Priority-based mixing ratios
+mixing:
+  all_datasets_ratio: 0.40    # 40% from ALL priority datasets
+  heavy_datasets_ratio: 0.30  # 30% from HEAVY priority
+  medium_datasets_ratio: 0.20 # 20% from MEDIUM priority
+  light_datasets_ratio: 0.10  # 10% from LIGHT priority
+
+# Stage-specific dataset selection
+stages:
+  stage1_midtrain:
+    # Mid-training: Focus on code-flow and reasoning
+    categories:
+      - code
+      - reasoning
+      - math
+    priorities:
+      - ALL
+      - HEAVY
+    exclude_categories: []
+    
+  stage2_sft:
+    # SFT: High-quality SWE trajectories
+    categories:
+      - swe
+      - code
+      - reasoning
+    priorities:
+      - ALL
+      - HEAVY
+    exclude_categories: []
+    
+  stage3_dpo:
+    # DPO: Preference data
+    categories:
+      - swe
+      - reasoning
+    priorities:
+      - ALL
+      - HEAVY
+    exclude_categories: []
+    
+  stage4_rlvr:
+    # RLVR: Tool use and execution
+    categories:
+      - tool_use
+      - swe
+      - long_horizon
+    priorities:
+      - ALL
+      - HEAVY
+    exclude_categories: []
+    
+  stage5_inftool:
+    # InfTool: All categories for synthesis
+    categories:
+      - all
+    priorities:
+      - ALL
+      - HEAVY
+      - MEDIUM
+    exclude_categories: []
+
+# Dataset evaluation settings
+evaluation:
+  sample_size: 100  # Samples to evaluate per dataset
+  min_quality_score: 0.5  # Minimum quality to include
+  auto_evaluate: true  # Auto-evaluate new datasets
+
+# Special handling for ALL datasets
+all_datasets:
+  # These datasets use ALL samples (not sampled)
+  use_full_stream: true
+  weight_multiplier: 2.0  # 2x weight in mixing
+  
+# Quality thresholds
+quality_thresholds:
+  ALL: 0.8    # High quality required
+  HEAVY: 0.6  # Good quality
+  MEDIUM: 0.4 # Acceptable quality
+  LIGHT: 0.2  # Low quality (use sparingly)
+

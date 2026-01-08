@@ -1,0 +1,41 @@
+# Stage 2: Supervised Fine-Tuning
+# Format: (spec → plan → tool calls → patch → tests → final summary)
+
+extends: base.yaml
+
+stage: 2
+name: "supervised_finetuning"
+
+training:
+  num_epochs: 5
+  learning_rate: 5e-6  # Lower for SFT
+  warmup_steps: 200
+  
+  # SFT-specific
+  max_length: 8192
+  truncation: true
+  padding: "right"
+
+data:
+  datasets:
+    - name: "high_quality_swe_trajectories"
+      format: "swe_trace"
+      required_fields:
+        - "spec"
+        - "plan"
+        - "tool_calls"
+        - "patch"
+        - "tests"
+        - "summary"
+      streaming: true
+      
+    - name: "tool_schema_examples"
+      format: "tool_trace"
+      streaming: true
+
+output:
+  checkpoint_dir: "checkpoints/stage2_sft"
+  variants:
+    - "instruct"  # Concise, policy-compliant
+    - "thinking"  # Deeper reasoning traces
+
