@@ -2,7 +2,10 @@
 Planner/Executor Harness
 Unified interface for multimodal generation
 
-Planner: Jan-v2-VL-high (vision-grounded planning)
+Planner Options:
+- OPTION 1: Jan-v2-VL-high (Qwen3-VL-8B-Thinking based)
+- OPTION 2: GLM-4.6V-Flash (GLM-4V based)
+
 Executors: Image, Audio, Video, Code
 
 MIT-level engineering: Production-grade multimodal harness
@@ -26,7 +29,7 @@ class PlannerExecutorHarness:
     
     def __init__(
         self,
-        planner_model,  # Jan-v2-VL-high
+        planner_model,  # Vision-language model (Jan-v2-VL-high or GLM-4.6V-Flash)
         image_generator: Optional[ImageGenerator] = None,
         audio_generator: Optional[AudioGenerator] = None,
         video_generator: Optional[VideoGenerator] = None,
@@ -34,9 +37,9 @@ class PlannerExecutorHarness:
     ):
         """
         Initialize planner/executor harness.
-        
+
         Args:
-            planner_model: Planner model (Jan-v2-VL-high)
+            planner_model: Planner model (Options: Jan-v2-VL-high, GLM-4.6V-Flash)
             image_generator: Image generation executor
             audio_generator: Audio generation executor
             video_generator: Video generation executor

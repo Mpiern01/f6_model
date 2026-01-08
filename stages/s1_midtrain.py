@@ -286,9 +286,9 @@ def run_stage1(config: Dict[str, Any], resume: Optional[str] = None, dry_run: bo
     training_config = config["training"]
     model_type = config.get("model", {}).get("model_type", "causal_lm")
 
-    # Use AutoModel with trust_remote_code for Qwen3VL
+    # OPTION 1: Qwen3VL (Jan-v2-VL-high)
     if model_type == "qwen3_vl":
-        logger.info("Loading Qwen3VL model with trust_remote_code...")
+        logger.info("Loading Qwen3VL model (Jan-v2-VL-high) with trust_remote_code...")
         model = AutoModel.from_pretrained(
             base_model_path,
             trust_remote_code=True,
@@ -296,6 +296,19 @@ def run_stage1(config: Dict[str, Any], resume: Optional[str] = None, dry_run: bo
             device_map="cpu",  # Force CPU for Mac
             low_cpu_mem_usage=True
         )
+
+    # OPTION 2: GLM-4.6V-Flash (Uncomment to use)
+    # elif model_type == "glm4v":
+    #     logger.info("Loading GLM-4.6V-Flash model with trust_remote_code...")
+    #     model = AutoModel.from_pretrained(
+    #         base_model_path,
+    #         trust_remote_code=True,
+    #         torch_dtype=torch.float32,  # Mac doesn't support fp16 well
+    #         device_map="cpu",  # Force CPU for Mac
+    #         low_cpu_mem_usage=True
+    #     )
+
+    # OPTION 3: Standard causal LM
     else:
         if training_config.get("use_lora", True):
             model = AutoModelForCausalLM.from_pretrained(
@@ -310,8 +323,8 @@ def run_stage1(config: Dict[str, Any], resume: Optional[str] = None, dry_run: bo
                 device_map="auto"
             )
 
-    # Apply LoRA if requested (skip for Qwen3VL due to PEFT compatibility issues)
-    if training_config.get("use_lora", True) and model_type != "qwen3_vl":
+    # Apply LoRA if requested (skip for vision-language models due to PEFT compatibility)
+    if training_config.get("use_lora", True) and model_type not in ["qwen3_vl", "glm4v"]:
         logger.info("Applying LoRA for efficient training")
         lora_config = LoraConfig(
             r=training_config.get("lora_r", 16),
@@ -323,8 +336,8 @@ def run_stage1(config: Dict[str, Any], resume: Optional[str] = None, dry_run: bo
         )
         model = get_peft_model(model, lora_config)
         logger.info("Applied LoRA adapters")
-    elif model_type == "qwen3_vl":
-        logger.info("Skipping LoRA for Qwen3VL (full fine-tuning mode)")
+    elif model_type in ["qwen3_vl", "glm4v"]:
+        logger.info(f"Skipping LoRA for {model_type} (full fine-tuning mode)")
     
     # Initialize dataset group manager with tracking
     logger.info("Initializing dataset group manager...")
@@ -346,6 +359,7 @@ def run_stage1(config: Dict[str, Any], resume: Optional[str] = None, dry_run: bo
     )
     
     # Load base model for drift control
+    # OPTION 1: Qwen3VL (Jan-v2-VL-high)
     if model_type == "qwen3_vl":
         base_model = AutoModel.from_pretrained(
             base_model_path,
@@ -354,6 +368,18 @@ def run_stage1(config: Dict[str, Any], resume: Optional[str] = None, dry_run: bo
             device_map="cpu",
             low_cpu_mem_usage=True
         )
+
+    # OPTION 2: GLM-4.6V-Flash (Uncomment to use)
+    # elif model_type == "glm4v":
+    #     base_model = AutoModel.from_pretrained(
+    #         base_model_path,
+    #         trust_remote_code=True,
+    #         torch_dtype=torch.float32,
+    #         device_map="cpu",
+    #         low_cpu_mem_usage=True
+    #     )
+
+    # OPTION 3: Standard causal LM
     else:
         base_model = AutoModelForCausalLM.from_pretrained(
             base_model_path,

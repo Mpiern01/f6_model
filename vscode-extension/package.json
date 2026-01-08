@@ -1,0 +1,100 @@
+{
+  "name": "f6-jan-ai",
+  "displayName": "F6 Jan AI Assistant",
+  "description": "Jan AI integration for VSCode with F6 StreamTrain model support",
+  "version": "1.0.0",
+  "publisher": "f6",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Machine Learning",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "f6JanAI.ask",
+        "title": "Ask Jan AI",
+        "category": "F6 Jan AI"
+      },
+      {
+        "command": "f6JanAI.explainCode",
+        "title": "Explain Code",
+        "category": "F6 Jan AI"
+      },
+      {
+        "command": "f6JanAI.improveCode",
+        "title": "Improve Code",
+        "category": "F6 Jan AI"
+      },
+      {
+        "command": "f6JanAI.generateTests",
+        "title": "Generate Tests",
+        "category": "F6 Jan AI"
+      },
+      {
+        "command": "f6JanAI.fixBugs",
+        "title": "Fix Bugs",
+        "category": "F6 Jan AI"
+      }
+    ],
+    "configuration": {
+      "title": "F6 Jan AI",
+      "properties": {
+        "f6JanAI.apiBase": {
+          "type": "string",
+          "default": "http://localhost:1337/v1",
+          "description": "Jan AI API base URL"
+        },
+        "f6JanAI.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Jan AI API key (optional)"
+        },
+        "f6JanAI.model": {
+          "type": "string",
+          "default": "Jan-v2-VL-high",
+          "description": "Model name to use (Options: Jan-v2-VL-high, GLM-4.6V-Flash)"
+        },
+        "f6JanAI.enableVision": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable vision capabilities"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "f6JanAI.ask",
+        "key": "cmd+shift+m",
+        "mac": "cmd+shift+m",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "f6JanAI.explainCode",
+        "key": "cmd+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "editorHasSelection"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
+

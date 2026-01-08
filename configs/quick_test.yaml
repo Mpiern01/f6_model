@@ -2,8 +2,14 @@
 # Tests streaming + training without catastrophic loss
 
 model:
+  # OPTION 1: Jan-v2-VL-high (Qwen3-VL-8B-Thinking based)
   base_model: "models/Jan-v2-VL-high"
   model_type: "qwen3_vl"
+
+  # OPTION 2: GLM-4.6V-Flash (Uncomment to use)
+  # base_model: "zai-org/GLM-4.6V-Flash"
+  # model_type: "glm4v"
+
   max_seq_length: 512
   vision_max_length: 512
   

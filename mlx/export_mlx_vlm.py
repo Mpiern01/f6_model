@@ -135,8 +135,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Convert HuggingFace model
+  # Convert Jan-v2-VL-high (Qwen3VL)
   python mlx/export_mlx_vlm.py --model-path janhq/Jan-v2-VL-high --output-path Jan-v2-VL-high-mlx
+
+  # Convert GLM-4.6V-Flash
+  python mlx/export_mlx_vlm.py --model-path zai-org/GLM-4.6V-Flash --output-path GLM-4.6V-Flash-mlx
 
   # Convert local checkpoint
   python mlx/export_mlx_vlm.py --model-path checkpoints/stage1_midtrain/final --output-path f6-streamtrain-mlx
